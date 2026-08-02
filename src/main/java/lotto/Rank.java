@@ -1,41 +1,55 @@
 package lotto;
 
-import java.util.List;
+import java.util.Arrays;
 
-// 당첨 등수 표현하는 열거형 선언
+// enum: 정해진 종류의 값 관리할 때 사용
 public enum Rank {
 
-    THREE_MATCHES(3, 5000), // 번호 3개 일치 시 5000원 받음
-    FOUR_MATCHES(4, 50_000),
-    FIVE_MATCHES(5, 1_500_000),
-    SIX_MATCHES(6, 2_000_000_000),
-    NONE(0, 0); // 3개 미만시 당첨X(else사용X)
+    FIRST(6, false, 2_000_000_000, "6개 일치 (2000000000원)"), // 1등 정보: 당첨 번호 6개 일치, 보너스 번호 판단 필요X, 당첨금 20억
+    SECOND(5, true, 30_000_000, "5개 일치, 보너스 볼 일치 (30000000원)"),
+    THIRD(5, false, 1_500_000, "5개 일치 (1500000원)"),
+    FOURTH(4, false, 50_000, "4개 일치 (50000원)"),
+    FIFTH(3, false, 5000, "3개 일치 (5000원)"),
+    MISS(0, false, 0, "낙첨");
 
-    private final int matchCount; // 일치 번호 개수
-    private final long prize; // 당첨금
+    private final int matchCount;
+    private final boolean bonusRequired;
+    private final int prize;
+    private final String description;
 
-    Rank(int matchCount, long prize) {
+    Rank(
+            int matchCount,
+            boolean bonusRequired,
+            int prize,
+            String description
+    ) {
         this.matchCount = matchCount;
+        this.bonusRequired = bonusRequired;
         this.prize = prize;
+        this.description = description;
     }
 
-    // 일치 개수 전달받아 해당하는 당첨 등수 찾음
-    public static Rank findByMatchCount(long matchCount) {
-        return availableRanks().stream() // 당첨 가능한 등수들 하나씩 확인
-                .filter(rank -> rank.matchCount == matchCount) // 전달받은 일치 개수와 같은 등수만 남김
+    // 번호 일치 개수와 보너스 번호 일치 여부 이용해 등수 찾음
+    public static Rank find(int matchCount, boolean bonusMatched) {
+        return Arrays.stream(values()) // Rank에 정의된 모든 등수 확인
+                .filter(rank -> rank.matches(matchCount, bonusMatched)) // 입력받은 조건과 일치하는 등수만 남김
                 .findFirst() // 조건에 맞는 첫 번째 등수 가져옴
-                .orElse(NONE); // 하나도 해당X> NONE(else사용 X)
+                .orElse(MISS); // 없을 시 낙첨 반환
     }
 
-    public static List<Rank> availableRanks() {
-        return List.of(THREE_MATCHES, FOUR_MATCHES, FIVE_MATCHES, SIX_MATCHES);
+    private boolean matches(int matchCount, boolean bonusMatched) {
+        if (this.matchCount != matchCount) { // 해당 등수의 번호 일치 개수와 실제 번호 일치 개수 다를시
+            return false; // false반환(else 사용X)
+        }
+
+        return bonusRequired == bonusMatched || matchCount == 6; // 같을 시 보너스 번호 조건 검사
     }
 
-    public int getMatchCount() {
-        return matchCount;
-    }
-
-    public long getPrize() {
+    public int getPrize() {
         return prize;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

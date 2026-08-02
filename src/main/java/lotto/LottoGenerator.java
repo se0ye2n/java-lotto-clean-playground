@@ -3,6 +3,7 @@ package lotto;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class LottoGenerator {
@@ -11,16 +12,25 @@ public class LottoGenerator {
     private static final int MAXIMUM_NUMBER = 45;
     private static final int LOTTO_NUMBER_COUNT = 6;
 
-    // 무작위 로또 한 장 생성
+    // 랜덤 로또 한 장 생성
     public Lotto generate() {
-        List<LottoNumber> numbers = createAllNumbers(); // 1부터 45까지의 모든 로또 번호 만들어 리스트 저장
-        Collections.shuffle(numbers); // 번호 리스트의 순서 무작위로 섞기
-        return new Lotto(numbers.subList(0, LOTTO_NUMBER_COUNT)); // 무작위로 섞은 번호 중 앞에서부터 6개만 가져옴
+        List<LottoNumber> numberPool = createNumberPool();
+        Collections.shuffle(numberPool); // 정렬돼있던 번호의 순서 섞음
+        return createLotto(numberPool); // 섞인 번호 중 6개를 골라 로또 만듬
     }
 
-    private List<LottoNumber> createAllNumbers() {
-        return new ArrayList<>(IntStream.rangeClosed(MINIMUM_NUMBER, MAXIMUM_NUMBER) // 수정 가능한 ArrayList로 다시 복사
-                .mapToObj(LottoNumber::new) // 각 정수를  LottoNumber객체로 변환
-                .toList()); // 변환한 LottoNumber들을 리스트로 만듬
+    // 1부터 45까지의 번호 들어 있는 목록 만듬
+    private List<LottoNumber> createNumberPool() {
+        return IntStream.rangeClosed(MINIMUM_NUMBER, MAXIMUM_NUMBER) // 1부터 45까지의 숫자 생성
+                .mapToObj(LottoNumber::new) // 각 정수를 LottoNumber객체로 변환
+                .collect(Collectors.toList());
+    }
+
+    private Lotto createLotto(List<LottoNumber> numberPool) {
+        List<LottoNumber> numbers = new ArrayList<>(
+                numberPool.subList(0, LOTTO_NUMBER_COUNT) // 섞인 목록의 0번째부터 6개 가져옴
+        );
+
+        return new Lotto(numbers); // subList결과를 새로운 리스트로 복사
     }
 }
