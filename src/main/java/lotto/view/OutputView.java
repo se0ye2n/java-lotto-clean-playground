@@ -2,67 +2,61 @@ package lotto.view;
 
 import lotto.domain.Lotto;
 import lotto.domain.Lottos;
-import lotto.domain.PurchaseAmount;
 import lotto.domain.Rank;
-import lotto.domain.WinningStatistics;
+import lotto.domain.WinningResult;
 
 public class OutputView {
 
-    public void printPurchasedLottos(
+    public void printPurchaseResult(
             int manualCount,
             int automaticCount,
             Lottos lottos
     ) {
         System.out.println();
-        printPurchaseCount(manualCount, automaticCount);
-        lottos.getValues().forEach(System.out::println);
-    }
-
-    private void printPurchaseCount(int manualCount, int automaticCount) {
         System.out.printf(
                 "수동으로 %d장, 자동으로 %d개를 구매했습니다.%n",
                 manualCount,
                 automaticCount
         );
+
+        for (Lotto lotto : lottos.getValues()) {
+            System.out.println(lotto);
+        }
     }
 
     public void printStatistics(
-            WinningStatistics statistics,
-            PurchaseAmount purchaseAmount
+            WinningResult result,
+            double profitRate
     ) {
         System.out.println();
         System.out.println("당첨 통계");
         System.out.println("---------");
-        printRankResults(statistics);
-        printProfitRate(statistics, purchaseAmount);
+
+        printRanks(result);
+        System.out.printf("총 수익률은 %.1f%%입니다.%n", profitRate);
     }
 
-    private void printRankResults(WinningStatistics statistics) {
-        printRank("3개 일치 (5000원)", Rank.FIFTH, statistics);
-        printRank("4개 일치 (50000원)", Rank.FOURTH, statistics);
-        printRank("5개 일치 (1500000원)", Rank.THIRD, statistics);
-        printRank("5개 일치, 보너스 볼 일치(30000000원)", Rank.SECOND, statistics);
-        printRank("6개 일치 (2000000000원)", Rank.FIRST, statistics);
+    private void printRanks(WinningResult result) {
+        printRank("3개 일치 (5,000원)", Rank.FIFTH, result);
+        printRank("4개 일치 (50,000원)", Rank.FOURTH, result);
+        printRank("5개 일치 (1,500,000원)", Rank.THIRD, result);
+        printRank("5개 일치, 보너스 볼 일치 (30,000,000원)",
+                Rank.SECOND, result);
+        printRank("6개 일치 (2,000,000,000원)",
+                Rank.FIRST, result);
     }
 
     private void printRank(
-            String message,
+            String match,
             Rank rank,
-            WinningStatistics statistics
+            WinningResult result
     ) {
         System.out.printf(
-                "%s - %d개%n",
-                message,
-                statistics.getCount(rank)
+                "%s (%,d원) - %d개%n",
+                match,
+                rank.getPrize(),
+                result.getCount(rank)
         );
-    }
-
-    private void printProfitRate(
-            WinningStatistics statistics,
-            PurchaseAmount purchaseAmount
-    ) {
-        double profitRate = statistics.calculateProfitRate(purchaseAmount);
-        System.out.printf("총 수익률은 %.2f입니다.%n", profitRate);
     }
 
     public void printErrorMessage(String message) {

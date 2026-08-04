@@ -13,9 +13,9 @@ public enum Rank {
 
     private final int matchingCount;
     private final boolean bonusRequired;
-    private final long prize;
+    private final int prize;
 
-    Rank(int matchingCount, boolean bonusRequired, long prize) {
+    Rank(int matchingCount, boolean bonusRequired, int prize) {
         this.matchingCount = matchingCount;
         this.bonusRequired = bonusRequired;
         this.prize = prize;
@@ -23,22 +23,27 @@ public enum Rank {
 
     public static Rank find(int matchingCount, boolean bonusMatched) {
         return Arrays.stream(values())
-                .filter(rank -> rank.matches(matchingCount, bonusMatched))
+                .filter(rank -> rank.isMatched(
+                        matchingCount,
+                        bonusMatched
+                ))
                 .findFirst()
                 .orElse(MISS);
     }
 
-    private boolean matches(int count, boolean bonusMatched) {
-        if (this == SECOND) {
-            return count == matchingCount && bonusMatched;
+    private boolean isMatched(int matchingCount, boolean bonusMatched) {
+        if (this.matchingCount != matchingCount) {
+            return false;
         }
-        if (this == THIRD) {
-            return count == matchingCount && !bonusMatched;
-        }
-        return count == matchingCount;
+
+        return isBonusConditionMatched(bonusMatched);
     }
 
-    public long getPrize() {
-        return prize;
+    private boolean isBonusConditionMatched(boolean bonusMatched) {
+        if (matchingCount != 5) {
+            return true;
+        }
+
+        return bonusMatched == bonusRequired;
     }
 }
