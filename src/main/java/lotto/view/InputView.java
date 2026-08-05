@@ -1,77 +1,74 @@
 package lotto.view;
 
-import lotto.domain.Lotto;
-import lotto.domain.LottoNumber;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import lotto.domain.Lotto;
 
 public class InputView {
 
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static final Pattern DELIMITER = Pattern.compile(",");
 
     public int readPurchaseAmount() {
         System.out.println("구입금액을 입력해 주세요.");
-        return readInteger();
+        return parseNumber(SCANNER.nextLine());
     }
 
-    public int readManualPurchaseCount() {
+    public int readManualCount() {
         System.out.println();
         System.out.println("수동으로 구매할 로또 수를 입력해 주세요.");
-        return readInteger();
+        return parseNumber(SCANNER.nextLine());
     }
 
     public List<Lotto> readManualLottos(int count) {
-        System.out.println();
-        System.out.println("수동으로 구매할 번호를 입력해 주세요.");
-        return createManualLottos(count);
+        List<Lotto> manualLottos = new ArrayList<>();
+        printManualLottoMessage(count);
+        readManualLottos(count, manualLottos);
+
+        return manualLottos;
     }
 
-    private List<Lotto> createManualLottos(int count) {
-        return java.util.stream.IntStream.range(0, count)
-                .mapToObj(index -> readLotto())
-                .collect(Collectors.toList());
+    private void printManualLottoMessage(int count) {
+        if (count > 0) {
+            System.out.println("수동으로 구매할 번호를 입력해 주세요.");
+        }
     }
 
-    public Lotto readWinningNumbers() {
+    private void readManualLottos(
+            int count,
+            List<Lotto> manualLottos
+    ) {
+        for (int index = 0; index < count; index++) {
+            manualLottos.add(new Lotto(readNumbers()));
+        }
+    }
+
+    public Lotto readWinningLotto() {
         System.out.println();
         System.out.println("지난 주 당첨 번호를 입력해 주세요.");
-        return readLotto();
+        return new Lotto(readNumbers());
     }
 
-    public LottoNumber readBonusNumber() {
-        System.out.println();
+    public int readBonusNumber() {
         System.out.println("보너스 볼을 입력해 주세요.");
-        return LottoNumber.from(readInteger());
+        return parseNumber(SCANNER.nextLine());
     }
 
-    private Lotto readLotto() {
-        String input = SCANNER.nextLine();
-        return new Lotto(parseNumbers(input));
-    }
-
-    private List<LottoNumber> parseNumbers(String input) {
-        return DELIMITER.splitAsStream(input)
+    private List<Integer> readNumbers() {
+        return Arrays.stream(SCANNER.nextLine().split(","))
                 .map(String::trim)
-                .map(this::parseInteger)
-                .map(LottoNumber::from)
+                .map(this::parseNumber)
                 .collect(Collectors.toList());
     }
 
-    private int readInteger() {
-        String input = SCANNER.nextLine();
-        return parseInteger(input);
-    }
-
-    private int parseInteger(String input) {
+    private int parseNumber(String input) {
         try {
-            return Integer.parseInt(input.trim());
+            return Integer.parseInt(input);
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException(
-                    "[ERROR] 숫자를 입력해 주세요."
+                    "[ERROR] 숫자를 입력해야 합니다."
             );
         }
     }

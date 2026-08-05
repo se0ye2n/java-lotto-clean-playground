@@ -2,29 +2,30 @@ package lotto.domain;
 
 public class WinningLotto {
 
-    private final Lotto winningNumbers;
+    private final Lotto lotto;
     private final LottoNumber bonusNumber;
 
-    public WinningLotto(Lotto winningNumbers, LottoNumber bonusNumber) {
-        validateBonusNumber(winningNumbers, bonusNumber);
-        this.winningNumbers = winningNumbers;
+    public WinningLotto(Lotto lotto, LottoNumber bonusNumber) {
+        validateDuplicate(lotto, bonusNumber);
+        this.lotto = lotto;
         this.bonusNumber = bonusNumber;
     }
 
-    private void validateBonusNumber(
-            Lotto winningNumbers,
+    private void validateDuplicate(
+            Lotto lotto,
             LottoNumber bonusNumber
     ) {
-        if (winningNumbers.contains(bonusNumber)) {
+        if (lotto.contains(bonusNumber)) {
             throw new IllegalArgumentException(
                     "[ERROR] 보너스 번호는 당첨 번호와 중복될 수 없습니다."
             );
         }
     }
 
-    public Rank findRank(Lotto lotto) {
-        int matchingCount = lotto.countMatchingNumbers(winningNumbers);
-        boolean bonusMatched = lotto.contains(bonusNumber);
+    public Rank determineRank(Lotto purchasedLotto) {
+        int matchingCount = purchasedLotto.countMatchingNumbers(lotto);
+        boolean bonusMatched = purchasedLotto.contains(bonusNumber);
+
         return Rank.find(matchingCount, bonusMatched);
     }
 }

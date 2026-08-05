@@ -33,27 +33,36 @@ public class OutputView {
         System.out.println("---------");
 
         printRanks(result);
-        System.out.printf("총 수익률은 %.1f%%입니다.%n", profitRate);
+        System.out.printf(
+                "총 수익률은 %.1f%%입니다.%n",
+                profitRate
+        );
     }
 
     private void printRanks(WinningResult result) {
-        printRank("3개 일치 (5,000원)", Rank.FIFTH, result);
-        printRank("4개 일치 (50,000원)", Rank.FOURTH, result);
-        printRank("5개 일치 (1,500,000원)", Rank.THIRD, result);
-        printRank("5개 일치, 보너스 볼 일치 (30,000,000원)",
-                Rank.SECOND, result);
-        printRank("6개 일치 (2,000,000,000원)",
-                Rank.FIRST, result);
+        printRank("3개 일치", Rank.FIFTH, result);
+        printRank("4개 일치", Rank.FOURTH, result);
+        printRank("5개 일치", Rank.THIRD, result);
+        printRank(
+                "5개 일치, 보너스 볼 일치",
+                Rank.SECOND,
+                result
+        );
+        printRank(
+                "6개 일치",
+                Rank.FIRST,
+                result
+        );
     }
 
     private void printRank(
-            String match,
+            String matchMessage,
             Rank rank,
             WinningResult result
     ) {
         System.out.printf(
                 "%s (%,d원) - %d개%n",
-                match,
+                matchMessage,
                 rank.getPrize(),
                 result.getCount(rank)
         );

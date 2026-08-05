@@ -14,22 +14,23 @@ public class Lottos {
         );
     }
 
+    public WinningResult calculateResult(
+            WinningLotto winningLotto
+    ) {
+        WinningResult winningResult = new WinningResult();
+
+        values.stream()
+                .map(winningLotto::determineRank)
+                .forEach(winningResult::add);
+
+        return winningResult;
+    }
+
     public List<Lotto> getValues() {
         return new ArrayList<>(values);
     }
 
-    public WinningStatistics createStatistics(WinningLotto winningLotto) {
-        WinningStatistics statistics = new WinningStatistics();
-        values.forEach(lotto -> addResult(statistics, lotto, winningLotto));
-        return statistics;
-    }
-
-    private void addResult(
-            WinningStatistics statistics,
-            Lotto lotto,
-            WinningLotto winningLotto
-    ) {
-        Rank rank = winningLotto.findRank(lotto);
-        statistics.add(rank);
+    public int size() {
+        return values.size();
     }
 }

@@ -1,66 +1,42 @@
 package lotto.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Lotto {
 
-    private static final int LOTTO_NUMBER_COUNT = 6;
+    private final LottoNumbers lottoNumbers;
 
-    private final List<LottoNumber> numbers;
-
-    public Lotto(List<LottoNumber> numbers) {
-        validateSize(numbers);
-        validateDuplicate(numbers);
-        this.numbers = sort(numbers);
+    public Lotto(List<Integer> numbers) {
+        this.lottoNumbers = new LottoNumbers(convert(numbers));
     }
 
-    private void validateSize(List<LottoNumber> numbers) {
-        if (numbers.size() != LOTTO_NUMBER_COUNT) {
-            throw new IllegalArgumentException(
-                    "[ERROR] 로또 번호는 6개여야 합니다."
-            );
-        }
+    public Lotto(LottoNumbers lottoNumbers) {
+        this.lottoNumbers = lottoNumbers;
     }
 
-    private void validateDuplicate(List<LottoNumber> numbers) {
-        long distinctCount = numbers.stream()
-                .distinct()
-                .count();
-
-        if (distinctCount != LOTTO_NUMBER_COUNT) {
-            throw new IllegalArgumentException(
-                    "[ERROR] 로또 번호는 중복될 수 없습니다."
-            );
-        }
-    }
-
-    private List<LottoNumber> sort(List<LottoNumber> numbers) {
-        List<LottoNumber> sortedNumbers = new ArrayList<>(numbers);
-        Collections.sort(sortedNumbers);
-        return Collections.unmodifiableList(sortedNumbers);
+    private static List<LottoNumber> convert(List<Integer> numbers) {
+        return numbers.stream()
+                .map(LottoNumber::from)
+                .collect(Collectors.toList());
     }
 
     public int countMatchingNumbers(Lotto winningLotto) {
-        return (int) numbers.stream()
-                .filter(winningLotto::contains)
-                .count();
+        return lottoNumbers.countMatchingNumbers(
+                winningLotto.lottoNumbers
+        );
     }
 
     public boolean contains(LottoNumber number) {
-        return numbers.contains(number);
+        return lottoNumbers.contains(number);
     }
 
-    public List<LottoNumber> getNumbers() {
-        return new ArrayList<>(numbers);
+    public LottoNumbers getLottoNumbers() {
+        return lottoNumbers;
     }
 
     @Override
     public String toString() {
-        return numbers.stream()
-                .map(LottoNumber::toString)
-                .collect(Collectors.joining(", ", "[", "]"));
+        return lottoNumbers.toString();
     }
 }

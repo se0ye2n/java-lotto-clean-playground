@@ -46,4 +46,8 @@ public enum Rank {
 
         return bonusMatched == bonusRequired;
     }
+
+    public int getPrize() {
+        return prize;
+    }
 }
