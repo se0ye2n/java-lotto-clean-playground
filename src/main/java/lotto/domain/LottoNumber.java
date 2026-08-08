@@ -1,42 +1,23 @@
 package lotto.domain;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class LottoNumber implements Comparable<LottoNumber> {
 
-    private static final int MINIMUM_NUMBER = 1;
-    private static final int MAXIMUM_NUMBER = 45;
-    private static final Map<Integer, LottoNumber> CACHE = new HashMap<>();
-
-    static {
-        for (int number = MINIMUM_NUMBER; number <= MAXIMUM_NUMBER; number++) {
-            CACHE.put(number, new LottoNumber(number));
-        }
-    }
-
     private final int value;
 
-    private LottoNumber(int value) {
+    public LottoNumber(int value) {
+        validateRange(value);
         this.value = value;
     }
 
-    public static LottoNumber from(int value) {
-        validateRange(value);
-        return CACHE.get(value);
-    }
-
-    private static void validateRange(int value) {
-        if (value < MINIMUM_NUMBER || value > MAXIMUM_NUMBER) {
+    private void validateRange(int value) {
+        if (value < LottoRules.MINIMUM_NUMBER
+                || value > LottoRules.MAXIMUM_NUMBER) {
             throw new IllegalArgumentException(
                     "[ERROR] 로또 번호는 1부터 45 사이여야 합니다."
             );
         }
-    }
-
-    public int getValue() {
-        return value;
     }
 
     @Override
@@ -49,9 +30,11 @@ public class LottoNumber implements Comparable<LottoNumber> {
         if (this == object) {
             return true;
         }
+
         if (!(object instanceof LottoNumber)) {
             return false;
         }
+
         LottoNumber other = (LottoNumber) object;
         return value == other.value;
     }

@@ -87,7 +87,7 @@ public class Application {
 
         return new WinningLotto(
                 winningNumbers,
-                LottoNumber.from(bonusNumber)
+                new LottoNumber(bonusNumber)
         );
     }
 }
